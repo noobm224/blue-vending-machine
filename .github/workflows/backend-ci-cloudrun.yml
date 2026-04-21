@@ -1,0 +1,123 @@
+name: Backend CI and Cloud Run Deploy
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - backend/**
+      - .github/workflows/backend-ci-cloudrun.yml
+  push:
+    branches: [main]
+    paths:
+      - backend/**
+      - .github/workflows/backend-ci-cloudrun.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backend-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend-ci:
+    name: Backend Quality Checks
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: vending
+          POSTGRES_PASSWORD: vending
+          POSTGRES_DB: vending
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U vending -d vending"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache Rust artifacts
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: backend -> target
+
+      - name: Compile check
+        run: cargo check --all-targets --all-features --locked
+
+      - name: Unit and integration tests
+        run: cargo test --all-features --locked
+
+      - name: DB-backed integration tests (ignored suite)
+        env:
+          TEST_DATABASE_URL: postgres://vending:vending@localhost:5432/vending
+        run: cargo test --locked --test api_db_integration -- --ignored
+
+      - name: Release build
+        run: cargo build --release --locked
+
+  deploy-cloud-run:
+    name: Build and Deploy Backend to Cloud Run
+    needs: backend-ci
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    environment: production
+    env:
+      GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+      GCP_REGION: ${{ vars.GCP_REGION }}
+      GAR_REPOSITORY: ${{ vars.GAR_REPOSITORY }}
+      CLOUD_RUN_SERVICE: ${{ vars.CLOUD_RUN_SERVICE }}
+      IMAGE_URI: ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GAR_REPOSITORY }}/vending-backend:${{ github.sha }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate required deployment variables
+        run: |
+          set -euo pipefail
+          for var in GCP_PROJECT_ID GCP_REGION GAR_REPOSITORY CLOUD_RUN_SERVICE; do
+            if [ -z "${!var:-}" ]; then
+              echo "Missing required repository variable: $var"
+              exit 1
+            fi
+          done
+
+      - name: Authenticate to Google Cloud (OIDC)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Build image with Cloud Build
+        run: |
+          gcloud builds submit backend \
+            --project "$GCP_PROJECT_ID" \
+            --tag "$IMAGE_URI"
+
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.CLOUD_RUN_SERVICE }}
+          region: ${{ env.GCP_REGION }}
+          project_id: ${{ env.GCP_PROJECT_ID }}
+          image: ${{ env.IMAGE_URI }}
+          flags: --allow-unauthenticated --port=8080

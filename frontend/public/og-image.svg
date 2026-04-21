@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Blue Vending social preview">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#fdfdfd"/>
+      <stop offset="100%" stop-color="#eff7ff"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fbff"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="24" y="24" width="1152" height="582" rx="24" fill="none" stroke="#dcecfd" stroke-width="2"/>
+
+  <circle cx="1050" cy="120" r="84" fill="#95c9fb" opacity="0.25"/>
+  <circle cx="1120" cy="80" r="40" fill="#3e8af3" opacity="0.18"/>
+  <circle cx="120" cy="560" r="100" fill="#95c9fb" opacity="0.2"/>
+
+  <g transform="translate(110 115)">
+    <rect x="0" y="0" width="350" height="400" rx="28" fill="url(#card)" stroke="#c0defd" stroke-width="4"/>
+    <rect x="34" y="42" width="282" height="180" rx="16" fill="#eff7ff" stroke="#95c9fb" stroke-width="3"/>
+    <circle cx="95" cy="120" r="18" fill="#2047ad"/>
+    <path d="M70 190l60-60 38 38 52-52 66 74" fill="none" stroke="#286ce8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="34" y="258" width="128" height="100" rx="12" fill="#3e8af3"/>
+    <rect x="188" y="258" width="128" height="100" rx="12" fill="#2057d5"/>
+    <circle cx="292" cy="332" r="12" fill="#effaf4"/>
+  </g>
+
+  <g fill="#1d3a7d" font-family="Space Grotesk, Inter, sans-serif">
+    <text x="520" y="252" font-size="76" font-weight="700">Blue Vending</text>
+    <text x="520" y="324" font-size="34" font-weight="500" fill="#2057d5">Simple. Fast. Reliable self-service.</text>
+    <text x="520" y="388" font-size="28" font-weight="500" fill="#286ce8">Machine + Admin dashboard experience</text>
+  </g>
+</svg>

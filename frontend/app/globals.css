@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --background: #000000;
+  --surface: #fdfdfd;
+  --surface-rgb: 253, 253, 253;
+  --ink: #1e293b;
+  --muted: #64748b;
+  --bay-50: #eff7ff;
+  --bay-100: #dcecfd;
+  --bay-300: #95c9fb;
+  --bay-500: #3e8af3;
+  --bay-600: #286ce8;
+  --bay-700: #2057d5;
+  --silver-50: #effaf4;
+  --silver-100: #d8f3e3;
+  --silver-500: #2e9b6c;
+  --silver-600: #1e7d56;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+body {
+  min-height: 100vh;
+  color: var(--ink);
+  background-color: #eff7ff;
+  @apply antialiased;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-rise-in {
+  animation: rise-in 450ms ease-out both;
+}
+
+.glass-panel {
+  background: var(--surface);
+  border: 1px solid var(--bay-100);
+  box-shadow:
+    0 7px 18px rgba(24, 40, 83, 0.07),
+    0 1px 5px rgba(24, 40, 83, 0.05);
+}
+
+.bg-surface {
+  background-color: var(--surface);
+}
+
+.bg-surface-95 {
+  background-color: rgb(var(--surface-rgb) / 0.95);
+}
+
+.bg-surface-92 {
+  background-color: rgb(var(--surface-rgb) / 0.92);
+}
