@@ -218,22 +218,6 @@ pub struct PurchaseResponse {
 
 > **File**: [`backend/src/domain/money.rs`](backend/src/domain/money.rs)
 
-This is the most technically interesting part of the system. The naive greedy approach
-(take as many of the largest denomination as possible, then descend) is optimal for an
-*unconstrained* THB coin set. It **fails** in practice when the machine is short on a
-middle denomination.
-
-**Failing greedy example:**
-- Need to return 30 THB change
-- Inventory: `{20: 0, 10: 0, 5: 3, 1: 15}`
-- Greedy tries 20 → 0 available; tries 10 → 0 available; takes 5×3=15, now needs 15
-  more from 1s. Actually this case works. But consider:
-- Need 30 THB, inventory: `{50: 1, 20: 0, 10: 0, 5: 0, 1: 30}`
-- Greedy picks 0 × 50 (can't), 0 × 20, 0 × 10, 0 × 5, then needs 30 × 1 — works.
-- More subtle: need 15, inventory `{10: 1, 5: 0, 1: 4}` — greedy takes 10, then needs
-  5, but no 5s and only 4 × 1s available. Greedy gets stuck. Backtracking retries
-  taking 0 × 10 and uses 1s alone, also fails, returning None — correct: impossible.
-
 **The implementation** uses **descending backtracking**:
 
 ```rust
