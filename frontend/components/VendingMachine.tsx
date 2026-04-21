@@ -311,7 +311,7 @@ function TransactionModal({
                   <ProductImage
                     src={item.imageUrl}
                     alt={item.name}
-                    className="h-40 w-full rounded-md border border-slate-200 object-cover"
+                    className="h-40 w-full rounded-md border border-slate-200 object-contain"
                   />
                   <div className="flex items-center justify-between text-slate-500">
                     <span>Item</span>

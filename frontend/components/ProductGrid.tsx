@@ -41,7 +41,7 @@ export function ProductGrid({
               disabled={disabled || oos}
               aria-label={`Select ${p.name}`}
               aria-pressed={isSelected}
-              className={`rounded-xl border bg-surface md:p-6 p-3 text-left shadow-sm transition
+              className={`rounded-xl border md:p-4 p-3 text-left shadow-sm transition
                 ${
                   isSelected
                     ? "border-[#95c9fb] bg-[#eff7ff]"
@@ -49,8 +49,8 @@ export function ProductGrid({
                 }
                 ${
                   oos
-                    ? "cursor-not-allowed border-slate-300 bg-slate-100 text-slate-400 shadow-none"
-                    : ""
+                    ? "cursor-not-allowed border-slate-300 bg-gray-100 text-slate-400 shadow-none"
+                    : "bg-surface "
                 }
                 ${underfunded && !oos ? "border-rose-100" : ""}
               `}
@@ -58,19 +58,19 @@ export function ProductGrid({
               <ProductImage
                 src={p.imageUrl}
                 alt={p.name}
-                className="h-32 w-full rounded-md border border-slate-200 object-cover"
+                className="h-32 w-full rounded-md border bg-white border-slate-200 object-contain"
               />
               <div className="mt-2 font-semibold text-slate-900">{p.name}</div>
-              <div className="mt-1 flex items-baseline justify-between">
+              <div className="mt-1 flex flex-col items-baseline justify-between md:flex-row md:items-start">
                 <span className="rounded bg-[#eff7ff] px-2 py-0.5 text-sm font-medium text-[#2057d5]">
                   {thb(p.price)}
                 </span>
                 {oos ? (
-                  <span className="rounded bg-rose-50 px-2 py-0.5 text-xs text-rose-600">
+                  <span className="rounded bg-rose-50 md:mt-0 mt-1 px-2 py-0.5 text-xs text-rose-600">
                     Out of stock
                   </span>
                 ) : (
-                  <span className="rounded bg-[#eff7ff] px-2 py-0.5 text-xs text-[#2057d5]">
+                  <span className="rounded bg-[#eff7ff] md:mt-0 mt-1 px-2 py-0.5 text-xs text-[#2057d5]">
                     {`${p.stock} left`}
                   </span>
                 )}
